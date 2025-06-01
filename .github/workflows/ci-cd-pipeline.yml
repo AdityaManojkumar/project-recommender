@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Create virtual environment and install dependencies
+        run: |
+          python -m venv venv
+          .\venv\Scripts\Activate.ps1
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with pytest
+        run: |
+          .\venv\Scripts\Activate.ps1
+          pytest
+
+  sonar_scan:
+    needs: build_and_test
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download and setup Sonar Scanner
+        run: |
+          mkdir -p $env:TEMP\sonarscanner
+          cd $env:TEMP\sonarscanner
+          curl -Lo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.1.0.4889-windows-x64.zip
+          Expand-Archive sonar-scanner-cli.zip -DestinationPath $env:TEMP\sonarscanner
+          echo "$env:TEMP\sonarscanner\sonar-scanner-7.1.0.4889-windows-x64\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+
+      - name: Run SonarQube scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner.bat
