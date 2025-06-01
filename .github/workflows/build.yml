@@ -10,7 +10,7 @@ on:
 
 jobs:
   sonarQube:
-    name: SonarQube Analysis
+    name: SonarQube Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # or your version
+          python-version: '3.11'  # or whatever you're using
 
       - name: Install dependencies
         run: |
@@ -32,4 +32,4 @@ jobs:
           projectBaseDir: .
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: http://your-ip-or-localhost:9000
+          SONAR_HOST_URL: http://localhost:9000  # or your IP if not local
