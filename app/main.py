@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from app.data import project_map, company_map, subjects_list, skills_list
+from .data import project_map, company_map, subjects_list, skills_list
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # Replace with your secret key

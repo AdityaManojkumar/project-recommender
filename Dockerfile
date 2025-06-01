@@ -1,14 +1,14 @@
-# Use official Python base image
-FROM python:3.10
+# Use a lightweight Python base image
+FROM python:3.10-slim
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy project files
+# Copy the entire project into the container
 COPY . .
 
-# Install dependencies
+# Install the required Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the app
+# Run your Flask app
 CMD ["python", "app/main.py"]
